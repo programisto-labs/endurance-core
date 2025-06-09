@@ -1,34 +1,31 @@
 {
-    "env": {
-        "browser": true,
-        "es2021": true
-    },
-    "extends": [
-        "standard"
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["standard"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "semi": ["error", "always"],
+    "indent": "off",
+    "quotes": [
+      "warn",
+      "double",
+      { "avoidEscape": true, "allowTemplateLiterals": true }
     ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": 12,
-        "sourceType": "module"
-    },
-    "plugins": [
-        "@typescript-eslint"
+    "comma-dangle": ["warn", "only-multiline"],
+    "@typescript-eslint/ban-ts-comment": [
+      "error",
+      {
+        "ts-expect-error": "allow-with-description"
+      }
     ],
-    "rules": {
-        "semi": [
-            "error",
-            "always"
-        ],
-        "indent": "off",
-        "@typescript-eslint/ban-ts-comment": [
-            "error",
-            {
-                "ts-expect-error": "allow-with-description"
-            }
-        ],
-        "space-before-function-paren": "off"
-    },
-    "ignorePatterns": [
-        "dist/"
-    ]
+    "space-before-function-paren": "off"
+  },
+  "ignorePatterns": ["dist/"]
 }
