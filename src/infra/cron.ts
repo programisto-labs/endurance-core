@@ -1,4 +1,4 @@
-import * as cron from 'node-cron';
+import cron from 'node-cron';
 import { enduranceEmitter } from '../core/emitter.js';
 import logger from '../core/logger.js';
 

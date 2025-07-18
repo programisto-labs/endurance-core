@@ -1,3 +1,25 @@
+## [0.6.2](https://github.com/programisto-labs/endurance-core/compare/v0.6.1...v0.6.2) (2025-06-19)
+
+
+### Bug Fixes
+
+* remove loki conf log ([ae27a72](https://github.com/programisto-labs/endurance-core/commit/ae27a728cbbb6cce3e47ceefb69a638fb51cfcd8))
+
+## [0.6.1](https://github.com/programisto-labs/endurance-core/compare/v0.6.0...v0.6.1) (2025-06-19)
+
+
+### Bug Fixes
+
+* fix loki auth mode ([14a0c54](https://github.com/programisto-labs/endurance-core/commit/14a0c542d3ba042f869d1ea8c9fa2ed9431f6acf))
+
+# [0.6.0](https://github.com/programisto-labs/endurance-core/compare/v0.5.10...v0.6.0) (2025-06-18)
+
+
+### Features
+
+* add multiple instance event listner ([b5e1527](https://github.com/programisto-labs/endurance-core/commit/b5e152773052c7232e220c8d449e637f08c1d227))
+* add pino logger ([d98f673](https://github.com/programisto-labs/endurance-core/commit/d98f673996f48aad1edb608e70f4785041ce7572))
+
 ## [0.5.10](https://github.com/programisto-labs/endurance-core/compare/v0.5.9...v0.5.10) (2025-06-16)
 
 
