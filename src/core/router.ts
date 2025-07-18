@@ -6,6 +6,7 @@ import type { Express } from 'express';
 import path from 'path';
 import fs from 'fs';
 import logger from '../core/logger.js';
+import { enduranceEmitter } from './emitter.js';
 
 type SecurityOptions = {
   permissions?: string[];
@@ -169,7 +170,36 @@ abstract class EnduranceRouter<T = any> {
     const middlewares = this.buildSecurityMiddleware(securityOptions);
     const wrappedHandlers = handlers.map(handler => async (req: Request, res: Response, next: NextFunction) => {
       try {
+        // Intercepter la réponse pour capturer le résultat
+        const originalSend = res.send;
+        const originalJson = res.json;
+        let responseData: any = null;
+        let responseStatus: number = 200;
+
+        res.send = function (data: any) {
+          responseData = data;
+          responseStatus = res.statusCode;
+          return originalSend.call(this, data);
+        };
+
+        res.json = function (data: any) {
+          responseData = data;
+          responseStatus = res.statusCode;
+          return originalJson.call(this, data);
+        };
+
         await handler(req as EnduranceRequest<T>, res, next);
+
+        // Émettre l'événement de fin de route avec le résultat
+        const eventName = `${path}_GET_END`;
+        enduranceEmitter.emit(eventName, {
+          path,
+          method: 'GET',
+          req,
+          res,
+          responseData,
+          responseStatus
+        });
       } catch (error) {
         next(error);
       }
@@ -212,7 +242,36 @@ abstract class EnduranceRouter<T = any> {
 
     const wrappedHandlers = handlers.map(handler => async (req: Request, res: Response, next: NextFunction) => {
       try {
+        // Intercepter la réponse pour capturer le résultat
+        const originalSend = res.send;
+        const originalJson = res.json;
+        let responseData: any = null;
+        let responseStatus: number = 200;
+
+        res.send = function (data: any) {
+          responseData = data;
+          responseStatus = res.statusCode;
+          return originalSend.call(this, data);
+        };
+
+        res.json = function (data: any) {
+          responseData = data;
+          responseStatus = res.statusCode;
+          return originalJson.call(this, data);
+        };
+
         await handler(req as EnduranceRequest<T>, res, next);
+
+        // Émettre l'événement de fin de route avec le résultat
+        const eventName = `${path}_POST_END`;
+        enduranceEmitter.emit(eventName, {
+          path,
+          method: 'POST',
+          req,
+          res,
+          responseData,
+          responseStatus
+        });
       } catch (error) {
         next(error);
       }
@@ -230,7 +289,36 @@ abstract class EnduranceRouter<T = any> {
     const middlewares = this.buildSecurityMiddleware(securityOptions);
     const wrappedHandlers = handlers.map(handler => async (req: Request, res: Response, next: NextFunction) => {
       try {
+        // Intercepter la réponse pour capturer le résultat
+        const originalSend = res.send;
+        const originalJson = res.json;
+        let responseData: any = null;
+        let responseStatus: number = 200;
+
+        res.send = function (data: any) {
+          responseData = data;
+          responseStatus = res.statusCode;
+          return originalSend.call(this, data);
+        };
+
+        res.json = function (data: any) {
+          responseData = data;
+          responseStatus = res.statusCode;
+          return originalJson.call(this, data);
+        };
+
         await handler(req as EnduranceRequest<T>, res, next);
+
+        // Émettre l'événement de fin de route avec le résultat
+        const eventName = `${path}_PUT_END`;
+        enduranceEmitter.emit(eventName, {
+          path,
+          method: 'PUT',
+          req,
+          res,
+          responseData,
+          responseStatus
+        });
       } catch (error) {
         next(error);
       }
@@ -246,7 +334,36 @@ abstract class EnduranceRouter<T = any> {
     const middlewares = this.buildSecurityMiddleware(securityOptions);
     const wrappedHandlers = handlers.map(handler => async (req: Request, res: Response, next: NextFunction) => {
       try {
+        // Intercepter la réponse pour capturer le résultat
+        const originalSend = res.send;
+        const originalJson = res.json;
+        let responseData: any = null;
+        let responseStatus: number = 200;
+
+        res.send = function (data: any) {
+          responseData = data;
+          responseStatus = res.statusCode;
+          return originalSend.call(this, data);
+        };
+
+        res.json = function (data: any) {
+          responseData = data;
+          responseStatus = res.statusCode;
+          return originalJson.call(this, data);
+        };
+
         await handler(req as EnduranceRequest<T>, res, next);
+
+        // Émettre l'événement de fin de route avec le résultat
+        const eventName = `${path}_DELETE_END`;
+        enduranceEmitter.emit(eventName, {
+          path,
+          method: 'DELETE',
+          req,
+          res,
+          responseData,
+          responseStatus
+        });
       } catch (error) {
         next(error);
       }
@@ -262,7 +379,36 @@ abstract class EnduranceRouter<T = any> {
     const middlewares = this.buildSecurityMiddleware(securityOptions);
     const wrappedHandlers = handlers.map(handler => async (req: Request, res: Response, next: NextFunction) => {
       try {
+        // Intercepter la réponse pour capturer le résultat
+        const originalSend = res.send;
+        const originalJson = res.json;
+        let responseData: any = null;
+        let responseStatus: number = 200;
+
+        res.send = function (data: any) {
+          responseData = data;
+          responseStatus = res.statusCode;
+          return originalSend.call(this, data);
+        };
+
+        res.json = function (data: any) {
+          responseData = data;
+          responseStatus = res.statusCode;
+          return originalJson.call(this, data);
+        };
+
         await handler(req as EnduranceRequest<T>, res, next);
+
+        // Émettre l'événement de fin de route avec le résultat
+        const eventName = `${path}_PATCH_END`;
+        enduranceEmitter.emit(eventName, {
+          path,
+          method: 'PATCH',
+          req,
+          res,
+          responseData,
+          responseStatus
+        });
       } catch (error) {
         next(error);
       }
