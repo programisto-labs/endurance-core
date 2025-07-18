@@ -1,6 +1,6 @@
 {
   "name": "@programisto/endurance-core",
-  "version": "0.5.10",
+  "version": "0.6.2",
   "publishConfig": {
     "access": "public"
   },

@@ -100,7 +100,7 @@ abstract class EnduranceRouter<T = any> {
     return middlewares;
   }
 
-  protected buildFileUploadMiddleware(config: FileUploadConfig): RequestHandler {
+  protected buildFileUploadMiddleware(config: FileUploadConfig): any {
     const { fieldName, options } = config;
     const { maxCount, allowedMimeTypes, maxFileSize, storage } = options;
 
