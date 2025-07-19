@@ -1,8 +1,8 @@
-import mongoose, { ConnectOptions } from 'mongoose';
+import mongoose from 'mongoose';
 import session from 'express-session';
 import logger from '../core/logger.js';
 
-const isMongo42OrHigher = process.env.IS_MONGO_42_OR_HIGHER === 'true';
+const isMongo42OrHigher = process.env.IS_MONGO_42_OR_HIGHER !== undefined ? process.env.IS_MONGO_42_OR_HIGHER : true;
 
 const connectMongoDBSession = isMongo42OrHigher
   ? (await import('connect-mongodb-session')).default
@@ -54,13 +54,6 @@ class EnduranceDatabase {
 
     logger.info('[endurance-core] Connexion à MongoDB sur :', host);
 
-    const options: ConnectOptions = {
-      connectTimeoutMS: 30000,
-      socketTimeoutMS: 45000,
-      serverSelectionTimeoutMS: 5000,
-      ssl: process.env.MONGODB_SSL === 'true'
-    };
-
     if (
       (mongoose.connection.readyState !== 0 && mongoose.connection.readyState !== 3) ||
       global.__MONGO_CONNECTED__
@@ -70,7 +63,7 @@ class EnduranceDatabase {
     }
 
     try {
-      const conn = await mongoose.connect(connectionString, options);
+      const conn = await mongoose.connect(connectionString);
       global.__MONGO_CONNECTED__ = true;
       logger.info('[endurance-core] ✅ MongoDB connecté avec succès');
       return { conn: conn.connection };

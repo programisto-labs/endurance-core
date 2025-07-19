@@ -65,9 +65,10 @@ class EnduranceApp {
       }
     });
 
-    // Vérifier si le module est utilisé directement (au premier niveau de node_modules)
-    const nodeModulesCount = (process.cwd().match(/node_modules/g) || []).length;
-    this.isDirectUsage = nodeModulesCount === 1;
+    const nmPath = path.join('node_modules', '@programisto', 'endurance-core', 'dist', 'internal');
+    const currentFilePath = fileURLToPath(import.meta.url);
+    const isDirect = currentFilePath.replace(/\\/g, '/').includes(`/${nmPath}`);
+    this.isDirectUsage = isDirect;
 
     // Initialiser l'application Express dans tous les cas
     this.app.set('port', this.port);
@@ -78,7 +79,6 @@ class EnduranceApp {
       this.setupErrorHandling();
       this.setupDatabase();
     });
-    console.log('EnduranceApp initialized with port:', this.port);
   }
 
   private setupMiddlewares() {
@@ -231,10 +231,6 @@ class EnduranceApp {
             }
           }
 
-          if (moduleEntries.length === 0) {
-            logger.warn('No edrm-* modules found in node_modules.');
-          }
-
           // Charger chaque module
           for (const moduleEntry of moduleEntries) {
             logger.info('Loading EDRM module:', moduleEntry.name);
@@ -280,7 +276,6 @@ class EnduranceApp {
           const version = sortedVersions[index];
           if (version === 'default') {
             await loadRoutes(basePath, versionsMap.get(version)!, null);
-            logger.info('Loaded routes :');
           } else {
             await loadRoutes(basePath, versionsMap.get(version)!, version);
           }
@@ -308,7 +303,6 @@ class EnduranceApp {
 
       const enableSwagger = process.env.SWAGGER !== 'false';
       if (enableSwagger) {
-        logger.info(this.swaggerApiFiles);
         const swaggerSpec = enduranceSwagger.generateSwaggerSpec(this.swaggerApiFiles);
         await enduranceSwagger.setupSwagger(this.app, swaggerSpec);
       }
