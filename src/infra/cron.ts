@@ -1,6 +1,7 @@
-import * as cron from 'node-cron';
 import { enduranceEmitter } from '../core/emitter.js';
 import logger from '../core/logger.js';
+import pkg from 'node-cron';
+const { schedule, validate } = pkg;
 
 interface ScheduledTask {
   stop: () => void;
@@ -10,13 +11,13 @@ class EnduranceCron {
   private scheduledTasks: Map<string, ScheduledTask> = new Map();
 
   public loadCronJob(name: string, cronTime: string, taskFunction: () => Promise<void>): void {
-    if (!cron.validate(cronTime)) {
+    if (!validate(cronTime)) {
       throw new Error('Invalid cron time format');
     }
 
     const upperName = name.toUpperCase();
 
-    const task = cron.schedule(cronTime, async () => {
+    const task = schedule(cronTime, async () => {
       enduranceEmitter.emit(`${upperName}_CRONSTART`);
       try {
         await taskFunction();
