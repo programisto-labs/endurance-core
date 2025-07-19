@@ -1,3 +1,25 @@
+# [1.0.0](https://github.com/programisto-labs/endurance-core/compare/v0.6.2...v1.0.0) (2025-07-19)
+
+
+### Bug Fixes
+
+* issue-55-cron-not-working ([9ce18dd](https://github.com/programisto-labs/endurance-core/commit/9ce18dd38a7eb646f65548593d9cf10298509614))
+* issue-55-cron-not-working fix tests ([086edb2](https://github.com/programisto-labs/endurance-core/commit/086edb28ce5406d39ed3a973c3009632f022cc6f))
+* **logger:** correct caller information and argument formatting ([50c3798](https://github.com/programisto-labs/endurance-core/commit/50c37984daa95c904e17aa82da66e7dfa8a4d968))
+* **router:** change method return type ([f392461](https://github.com/programisto-labs/endurance-core/commit/f39246175d246475d9c08e7e77aa1c5ecef66c53))
+* **router:** change method return type ([a48c13d](https://github.com/programisto-labs/endurance-core/commit/a48c13dca78b8c3631ab46ce2977086d7ee6270f))
+* use import cron directly instead of * from cron ([86b0ea7](https://github.com/programisto-labs/endurance-core/commit/86b0ea77759bf08bb13e260a46a440e763b0992b))
+
+
+### Features
+
+* **router:** add event emission at the end of each request ([4962b33](https://github.com/programisto-labs/endurance-core/commit/4962b336c65af9b20eb349e084e766bfdf40853b)), closes [#34](https://github.com/programisto-labs/endurance-core/issues/34)
+
+
+### BREAKING CHANGES
+
+* **logger:** None - maintains backward compatibility
+
 ## [0.6.2](https://github.com/programisto-labs/endurance-core/compare/v0.6.1...v0.6.2) (2025-06-19)
 
 
