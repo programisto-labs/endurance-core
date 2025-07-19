@@ -6,8 +6,10 @@ const mockSchedule = jest.fn();
 const mockEmit = jest.fn();
 
 jest.unstable_mockModule('node-cron', () => ({
-  validate: mockValidate,
-  schedule: mockSchedule
+  default: {
+    validate: mockValidate,
+    schedule: mockSchedule
+  }
 }));
 
 jest.unstable_mockModule('../src/core/emitter', () => ({
@@ -33,13 +35,13 @@ describe('EnduranceCron', () => {
   it('should throw on invalid cron', () => {
     mockValidate.mockReturnValue(false);
     expect(() =>
-      enduranceCron.loadCronJob('fail', 'bad', async () => {})
+      enduranceCron.loadCronJob('fail', 'bad', async () => { })
     ).toThrow('Invalid cron time format');
   });
 
   it('should run and emit events', async () => {
     mockValidate.mockReturnValue(true);
-    let capturedFn: () => Promise<void> = async () => {};
+    let capturedFn: () => Promise<void> = async () => { };
 
     mockSchedule.mockImplementation((_, fn) => {
       capturedFn = fn as () => Promise<void>;
@@ -57,7 +59,7 @@ describe('EnduranceCron', () => {
 
   it('should handle error in job and still emit end', async () => {
     mockValidate.mockReturnValue(true);
-    let capturedFn: () => Promise<void> = async () => {};
+    let capturedFn: () => Promise<void> = async () => { };
 
     mockSchedule.mockImplementation((_, fn) => {
       capturedFn = fn as () => Promise<void>;
