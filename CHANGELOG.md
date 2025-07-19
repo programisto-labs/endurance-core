@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/programisto-labs/endurance-core/compare/v1.0.0...v1.0.1) (2025-07-19)
+
+
+### Bug Fixes
+
+* remove logger useless infos ([ccd98c3](https://github.com/programisto-labs/endurance-core/commit/ccd98c3e2a93a73768607b7d76012038716e4ea2))
+* remove releases.yml ([273a569](https://github.com/programisto-labs/endurance-core/commit/273a5695877c50f064bfefbf1a94b4f6a130f9a9))
+
 # [1.0.0](https://github.com/programisto-labs/endurance-core/compare/v0.6.2...v1.0.0) (2025-07-19)
 
 
