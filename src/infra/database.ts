@@ -50,22 +50,17 @@ class EnduranceDatabase {
 
   public async connect(): Promise<{ conn: mongoose.Connection }> {
     const connectionString = this.getDbConnectionString();
-    const host = new URL(connectionString).host;
-
-    logger.info('[endurance-core] Connexion à MongoDB sur :', host);
 
     if (
       (mongoose.connection.readyState !== 0 && mongoose.connection.readyState !== 3) ||
       global.__MONGO_CONNECTED__
     ) {
-      logger.info('[endurance-core] Connexion MongoDB déjà établie. Skip.');
       return { conn: mongoose.connection };
     }
 
     try {
       const conn = await mongoose.connect(connectionString);
       global.__MONGO_CONNECTED__ = true;
-      logger.info('[endurance-core] ✅ MongoDB connecté avec succès');
       return { conn: conn.connection };
     } catch (err) {
       logger.error('[endurance-core] ❌ Échec connexion MongoDB :', err);
