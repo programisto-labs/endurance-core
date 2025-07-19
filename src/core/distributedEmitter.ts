@@ -35,8 +35,6 @@ export const setupDistributedEmitter = async (db: mongoose.mongo.Db) => {
                 }
             }
         });
-
-        logger.info('[emitter] MongoDB distributed emitter activated');
         isDistributed = true;
     } catch (err) {
         logger.warn('[emitter] Failed to set up distributed emitter', err);

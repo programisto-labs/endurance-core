@@ -20,7 +20,9 @@ targets.push({
         colorize: true,
         translateTime: 'HH:MM:ss',
         ignore: 'pid,hostname',
-        messageFormat: '{msg}'
+        messageFormat: '{msg}',
+        errorLikeObjectKeys: ['err', 'error'],
+        errorProps: 'message,stack,code,errno,syscall,path'
     },
     level: process.env.LOG_LEVEL || 'info'
 });
@@ -78,17 +80,136 @@ const baseLogger = pino(
     transport
 );
 
-// Ajout du caller
+// Création du logger avec caller
 const logger = pinoCaller(baseLogger, {
-  relativeTo: process.cwd()
+    relativeTo: process.cwd()
 });
 
+// Fonction helper pour formater les messages avec arguments multiples
+const formatMessage = (msg: any, ...args: any[]) => {
+    if (args.length === 0) return msg;
+    return [msg, ...args].map(arg =>
+        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+    ).join(' ');
+};
+
+// Fonctions helper qui préservent l'information de l'appelant
+export const logInfo = (msg: any, ...args: any[]) => {
+    if (args.length === 1 && typeof args[0] === 'object') {
+        logger.info({ msg, err: serializeError(args[0]) });
+    } else {
+        logger.info(formatMessage(msg, ...args));
+    }
+};
+
+export const logWarn = (msg: any, ...args: any[]) => {
+    if (args.length === 1 && typeof args[0] === 'object') {
+        logger.warn({ msg, err: serializeError(args[0]) });
+    } else {
+        logger.warn(formatMessage(msg, ...args));
+    }
+};
+
+export const logError = (msg: any, ...args: any[]) => {
+    if (args.length === 1 && typeof args[0] === 'object') {
+        logger.error({ msg, err: serializeError(args[0]) });
+    } else {
+        logger.error(formatMessage(msg, ...args));
+    }
+};
+
+export const logDebug = (msg: any, ...args: any[]) => {
+    if (args.length === 1 && typeof args[0] === 'object') {
+        logger.debug({ msg, err: serializeError(args[0]) });
+    } else {
+        logger.debug(formatMessage(msg, ...args));
+    }
+};
+
+// Fonction pour sérialiser les erreurs
+const serializeError = (err: any) => {
+    if (err instanceof Error) {
+        return {
+            message: err.message,
+            stack: err.stack,
+            name: err.name,
+            ...Object.getOwnPropertyNames(err).reduce((acc, key) => {
+                if (key !== 'message' && key !== 'stack' && key !== 'name') {
+                    acc[key] = (err as any)[key];
+                }
+                return acc;
+            }, {} as any)
+        };
+    }
+    return err;
+};
+
 // Rediriger console.* vers logger
-console.log = (...args) => logger.info(args.join(' '));
-console.info = (...args) => logger.info(args.join(' '));
-console.warn = (...args) => logger.warn(args.join(' '));
-console.error = (...args) => logger.error(args.join(' '));
-console.debug = (...args) => logger.debug(args.join(' '));
+console.log = (...args) => {
+    if (args.length === 1 && typeof args[0] === 'object') {
+        logger.info(serializeError(args[0]));
+    } else if (args.length === 2 && typeof args[1] === 'object') {
+        logger.info({ msg: args[0], err: serializeError(args[1]) });
+    } else {
+        // Pour les arguments multiples, créer un message formaté
+        const message = args.map(arg =>
+            typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+        ).join(' ');
+        logger.info(message);
+    }
+};
+console.info = (...args) => {
+    if (args.length === 1 && typeof args[0] === 'object') {
+        logger.info(serializeError(args[0]));
+    } else if (args.length === 2 && typeof args[1] === 'object') {
+        logger.info({ msg: args[0], err: serializeError(args[1]) });
+    } else {
+        // Pour les arguments multiples, créer un message formaté
+        const message = args.map(arg =>
+            typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+        ).join(' ');
+        logger.info(message);
+    }
+};
+console.warn = (...args) => {
+    if (args.length === 1 && typeof args[0] === 'object') {
+        logger.warn(serializeError(args[0]));
+    } else if (args.length === 2 && typeof args[1] === 'object') {
+        logger.warn({ msg: args[0], err: serializeError(args[1]) });
+    } else {
+        // Pour les arguments multiples, créer un message formaté
+        const message = args.map(arg =>
+            typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+        ).join(' ');
+        logger.warn(message);
+    }
+};
+console.error = (...args) => {
+    if (args.length === 1 && typeof args[0] === 'object') {
+        logger.error(serializeError(args[0]));
+    } else if (args.length === 2 && typeof args[1] === 'object') {
+        logger.error({ msg: args[0], err: serializeError(args[1]) });
+    } else {
+        // Pour les arguments multiples, créer un message formaté
+        const message = args.map(arg =>
+            typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+        ).join(' ');
+        logger.error(message);
+    }
+};
+console.debug = (...args) => {
+    if (args.length === 1 && typeof args[0] === 'object') {
+        logger.debug(serializeError(args[0]));
+    } else if (args.length === 2 && typeof args[1] === 'object') {
+        logger.debug({ msg: args[0], err: serializeError(args[1]) });
+    } else {
+        // Pour les arguments multiples, créer un message formaté
+        const message = args.map(arg =>
+            typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
+        ).join(' ');
+        logger.debug(message);
+    }
+};
 
 // Morgan stream
 const accessLogStream = rfs.createStream('access.log', {
