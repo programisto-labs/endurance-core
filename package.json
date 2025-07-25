@@ -1,53 +1,61 @@
 {
-  "name": "endurance-core",
-  "version": "0.4.28",
+  "name": "@programisto/endurance-core",
+  "version": "1.0.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "endurance framework core lib",
   "main": "./dist/index.js",
   "type": "module",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "ts-node ./src/lib/app.ts",
-    "lint": "eslint '**/*.{ts,tsx}'",
-    "build": "eslint '**/*.{ts,tsx}' --ignore-pattern '**/__tests__/**' && tsc && tsc-alias",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
+    "dev": "ts-node ./src/internal/app.ts",
+    "lint": "eslint \"**/*.{ts,tsx}\" --fix",
+    "build": "eslint \"**/*.{ts,tsx}\" --ignore-pattern '**/__tests__/**' && tsc && tsc-alias",
+    "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest",
+    "test:coverage": "cross-env NODE_OPTIONS=\"--experimental-vm-modules\" jest --coverage",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/florianduport/endurance-core.git"
+    "url": "git+https://github.com/programisto-labs/endurance-core.git"
   },
   "dependencies": {
     "@typegoose/typegoose": "^12.13.0",
     "amqplib": "^0.10.5",
     "compression": "^1.7.4",
     "connect-mongodb-session": "^5.0.0",
+    "connect-mongodb-session-legacy": "npm:connect-mongodb-session@2.4.1",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "http-errors": "^1.8.0",
-    "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
     "mongoose": "^8.12.1",
     "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.2",
+    "multer": "^2.0.2",
     "node-cron": "^2.0.3",
-    "passport": "^0.7.0",
-    "passport-jwt": "^4.0.1",
-    "passport-local": "^1.0.0",
-    "rotating-file-stream": "^2.1.5",
+    "pino": "^9.7.0",
+    "pino-caller": "^4.0.0",
+    "pino-loki": "^2.6.0",
+    "pino-pretty": "^13.0.0",
+    "rotating-file-stream": "^2.1.6",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
-    "winston": "^3.15.0",
-    "winston-loki": "^6.1.2"
+    "swagger-ui-express": "^5.0.1"
   },
   "author": "florianduport",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/florianduport/endurance-core/issues"
+    "url": "https://github.com/programisto-labs/endurance-core/issues"
   },
-  "homepage": "https://github.com/florianduport/endurance-core#readme",
+  "homepage": "https://github.com/programisto-labs/endurance-core#readme",
   "devDependencies": {
+    "@commitlint/config-conventional": "^19.8.1",
+    "@jest/globals": "^30.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/amqplib": "^0.10.7",
     "@types/compression": "^1.7.5",
     "@types/connect-mongodb-session": "^2.4.7",
@@ -66,18 +74,32 @@
     "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^8.26.0",
     "@typescript-eslint/parser": "^8.26.0",
+    "commitlint": "^19.8.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.1",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.6.0",
+    "eslint-plugin-security": "^3.0.1",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
     "reflect-metadata": "^0.2.2",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.6",
-    "ts-migrate": "^0.1.35",
     "ts-node": "^10.0.0",
     "tsc-alias": "^1.8.11",
     "typescript": "^4.0.0"
-  }
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
 }

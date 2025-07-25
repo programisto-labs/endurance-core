@@ -1,4 +1,5 @@
 import { Kafka, EachMessagePayload } from 'kafkajs';
+import logger from '../core/logger.js';
 
 interface ConsumerOptions {
     brokers: string[];
@@ -16,7 +17,7 @@ const createConsumer = async (options: ConsumerOptions, callback: MessageCallbac
     try {
         await consumer.connect();
         await consumer.subscribe({ topic, fromBeginning: true });
-        console.log(`Kafka consumer connected to topic: ${topic}`);
+        logger.info(`Kafka consumer connected to topic: ${topic}`);
         await consumer.run({
             eachMessage: async ({ message }: EachMessagePayload) => {
                 const messageContent = message.value?.toString() || '';
@@ -24,7 +25,7 @@ const createConsumer = async (options: ConsumerOptions, callback: MessageCallbac
             }
         });
     } catch (error) {
-        console.error('Error connecting to Kafka', error);
+        logger.error('Error connecting to Kafka', error);
     }
 };
 

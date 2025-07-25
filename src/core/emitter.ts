@@ -21,14 +21,17 @@ class EnduranceEventEmitter extends EventEmitter {
   }
 
   public emit(eventName: string | symbol, ...args: unknown[]): boolean {
-    this.anyListeners.forEach(callback => {
+    this.anyListeners.forEach((callback) => {
       callback(eventName, ...args);
     });
     return super.emit(eventName, ...args);
   }
 }
 
-const createEmitter = (): { emitter: EnduranceEventEmitter; eventTypes: EventTypes } => {
+const createEmitter = (): {
+  emitter: EnduranceEventEmitter;
+  eventTypes: EventTypes;
+} => {
   const emitter = new EnduranceEventEmitter();
 
   const eventTypes: EventTypes = {};

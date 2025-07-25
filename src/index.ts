@@ -1,11 +1,33 @@
-export { default as app } from './lib/app.js';
-export { EnduranceAuthMiddleware, EnduranceAccessControl, EnduranceAuth } from './lib/auth.js';
-export { EnduranceSchema, EnduranceModel, EnduranceDocumentType, EnduranceModelType, ObjectId, Ref } from './lib/schema.js';
-export { EnduranceRouter, EnduranceRequest, Response, NextFunction, SecurityOptions, FileUploadConfig } from './lib/router.js';
-export { enduranceConsumer } from './lib/consumer.js';
-export { enduranceCron } from './lib/cron.js';
-export { enduranceDatabase } from './lib/database.js';
-export { enduranceEmitter, enduranceEventTypes } from './lib/emitter.js';
-export { enduranceListener } from './lib/listener.js';
-export { enduranceNotificationManager } from './lib/notification.js';
-export { enduranceSwagger } from './lib/swagger.js';
+export { default as app } from './internal/app.js';
+
+export {
+  EnduranceAuthMiddleware,
+  EnduranceAccessControl,
+  EnduranceAuth
+} from './core/auth.js';
+
+export {
+  EnduranceSchema,
+  EnduranceModel,
+  EnduranceDocumentType,
+  EnduranceModelType,
+  ObjectId,
+  Ref
+} from './core/schema.js';
+
+export {
+  EnduranceRouter,
+  EnduranceRequest,
+  Response,
+  NextFunction,
+  SecurityOptions,
+  FileUploadConfig
+} from './core/router.js';
+
+export { enduranceConsumer } from './core/consumer.js';
+export { enduranceEmitter, enduranceEventTypes } from './core/emitter.js';
+export { enduranceListener } from './core/listener.js';
+export { enduranceNotificationManager } from './core/notification.js';
+export { enduranceCron } from './infra/cron.js';
+export { enduranceDatabase } from './infra/database.js';
+export { enduranceSwagger } from './infra/swagger.js';

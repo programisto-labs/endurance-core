@@ -1,4 +1,5 @@
 import amqp, { ConsumeMessage } from 'amqplib';
+import logger from '../core/logger.js';
 
 interface ConsumerOptions {
     url: string;
@@ -14,7 +15,7 @@ const createConsumer = async (options: ConsumerOptions, callback: MessageCallbac
         const channel = await connection.createChannel();
         await channel.assertQueue(queue, { durable: true });
 
-        console.log(`RabbitMQ consumer connected to queue: ${queue}`);
+        logger.info(`RabbitMQ consumer connected to queue: ${queue}`);
 
         channel.consume(queue, (msg: ConsumeMessage | null) => {
             if (msg !== null) {
@@ -24,7 +25,7 @@ const createConsumer = async (options: ConsumerOptions, callback: MessageCallbac
             }
         });
     } catch (error) {
-        console.error('Error connecting to RabbitMQ', error);
+        logger.error('Error connecting to RabbitMQ', error);
     }
 };
 

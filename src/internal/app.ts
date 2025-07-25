@@ -5,22 +5,20 @@ import session from 'express-session';
 import path from 'path';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import logger from 'morgan';
+import morgan from 'morgan';
+import logger, { morganStream } from '../core/logger.js';
 import createError from 'http-errors';
-import winston from 'winston';
-import LokiTransport from 'winston-loki';
 import fs from 'fs';
 import compression from 'compression';
-import rfs from 'rotating-file-stream';
 import multer from 'multer';
-import { enduranceEmitter, enduranceEventTypes } from './emitter.js';
-import { enduranceSwagger } from './swagger.js';
+import { enduranceEmitter, enduranceEventTypes } from '../core/emitter.js';
+import { enduranceSwagger } from '../infra/swagger.js';
 import { fileURLToPath } from 'url';
+import { setupDistributedEmitter } from '../core/distributedEmitter.js';
 
 class EnduranceApp {
   public app: express.Application;
   private port: number | string;
-  private loggerWinston: winston.Logger = winston.createLogger();
   private swaggerApiFiles: string[] = [];
   private __dirname: string;
   private isDirectUsage: boolean = false;
@@ -45,7 +43,7 @@ class EnduranceApp {
           fs.mkdirSync(uploadDir, { recursive: true });
         }
 
-        console.log('Upload directory:', uploadDir);
+        logger.info('Upload directory:', uploadDir);
         cb(null, uploadDir);
       },
       filename: (req: Request, file: any, cb: (error: Error | null, filename: string) => void) => {
@@ -55,7 +53,7 @@ class EnduranceApp {
         // Ajouter un suffixe unique à la fin
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         const filename = `${originalName}-${uniqueSuffix}${ext}`;
-        console.log('Saving file:', filename);
+        logger.info('Saving file:', filename);
         cb(null, filename);
       }
     });
@@ -67,9 +65,10 @@ class EnduranceApp {
       }
     });
 
-    // Vérifier si le module est utilisé directement (au premier niveau de node_modules)
-    const nodeModulesCount = (this.__dirname.match(/node_modules/g) || []).length;
-    this.isDirectUsage = nodeModulesCount === 1;
+    const nmPath = path.join('node_modules', '@programisto', 'endurance-core', 'dist', 'internal');
+    const currentFilePath = fileURLToPath(import.meta.url);
+    const isDirect = currentFilePath.replace(/\\/g, '/').includes(`/${nmPath}`);
+    this.isDirectUsage = isDirect;
 
     // Initialiser l'application Express dans tous les cas
     this.app.set('port', this.port);
@@ -121,56 +120,7 @@ class EnduranceApp {
   }
 
   private setupLogging() {
-    if (process.env.LOGGER_LOCAL_ACTIVATED === 'true') {
-      const logDirectory = path.join(this.__dirname, '../../../../logs');
-      if (!fs.existsSync(logDirectory)) {
-        try {
-          fs.mkdirSync(logDirectory);
-        } catch (err) {
-          console.error('Error creating log directory:', err);
-        }
-      }
-      const accessLogStream = rfs.createStream('access.log', {
-        interval: '1d', // rotate daily
-        path: logDirectory
-      });
-
-      if (process.env.LOGGER_DISTANT_ACTIVATED === 'true') {
-        const transports: winston.transport[] = [
-          new winston.transports.Console()
-        ];
-
-        transports.push(
-          new LokiTransport({
-            host: process.env.LOGGER_DISTANT_URL || '',
-            labels: { job: process.env.LOGGER_DISTANT_APP_NAME || 'nodejs_app' },
-            json: true,
-            onConnectionError: (err) => {
-              console.error('Connection error with Loki:', err);
-            }
-          })
-        );
-
-        this.loggerWinston = winston.createLogger({
-          level: 'info',
-          format: winston.format.combine(
-            winston.format.timestamp(),
-            winston.format.errors({ stack: true }),
-            winston.format.json()
-          ),
-          transports
-        });
-
-        this.app.use(logger('combined', {
-          stream: {
-            write: (message: string) => {
-              accessLogStream.write(message);
-              this.loggerWinston.info(message.trim());
-            }
-          }
-        }));
-      }
-    }
+    this.app.use(morgan('combined', { stream: morganStream }));
   }
 
   private async setupRoutes() {
@@ -186,7 +136,7 @@ class EnduranceApp {
         this.app.use(versionedPath, router.getRouter());
         this.swaggerApiFiles.push(filePath); // Add route file to Swagger API files list
       } catch (err) {
-        console.error(`Error loading routes from ${filePath}:`, err);
+        logger.error(`Error loading routes from ${filePath}:`, err);
       }
     };
 
@@ -212,7 +162,7 @@ class EnduranceApp {
           try {
             await import('file:///' + filePath);
           } catch (err) {
-            console.error(`Error loading file ${filePath}:`, err);
+            logger.error(`Error loading file ${filePath}:`, err);
           }
         } else if (endsWith(file, '.router.js') && endsWith(folderPath, 'routes')) {
           const routerName = path.basename(file, '.router.js');
@@ -242,61 +192,77 @@ class EnduranceApp {
                 }
               }
             } catch (err) {
-              console.error(`Error processing file ${file}:`, err);
+              logger.error(`Error processing file ${file}:`, err);
             }
           });
         } catch (err) {
-          console.error('Error reading directory:', err);
+          logger.error('Error reading directory:', err);
         }
       };
 
       const loadMarketplaceModules = async () => {
-        const nodeModulesPath = path.join(this.__dirname, '../../../../node_modules');
-        const localModulesPath = path.join(this.__dirname, '../../../../modules');
+        const nodeModulesPath = path.join(process.cwd(), 'node_modules');
+        const localModulesPath = path.join(process.cwd(), 'modules');
+
+        const isDirectory = (filePath: string) => fs.existsSync(filePath) && fs.statSync(filePath).isDirectory();
 
         try {
-          const moduleNames = fs.readdirSync(nodeModulesPath);
-          for (const moduleName of moduleNames) {
-            if (moduleName.startsWith('edrm-')) {
-              console.log('Loading EDRM module: ', moduleName);
-              const modulePath = path.join(nodeModulesPath, moduleName);
-              const localModulePath = path.join(localModulesPath, moduleName);
+          const moduleEntries: { name: string; path: string }[] = [];
 
-              // Vérifier d'abord le nouveau chemin avec dist
-              const distModulePath = path.join(modulePath, 'dist');
+          // Modules à la racine de node_modules
+          const rootModules = fs.readdirSync(nodeModulesPath);
+          for (const moduleName of rootModules) {
+            const fullPath = path.join(nodeModulesPath, moduleName);
+            if (moduleName.startsWith('edrm-') && isDirectory(fullPath)) {
+              moduleEntries.push({ name: moduleName, path: fullPath });
+            }
 
-              if (isDirectory(distModulePath)) {
-                try {
-                  console.log('Loading from dist directory:', distModulePath);
-                  await readModulesFolder(distModulePath, localModulePath);
-                } catch (err) {
-                  console.error(`Error reading module dist folder ${distModulePath}:`, err);
-                }
-              } else if (isDirectory(modulePath)) {
-                // Fallback sur l'ancien chemin pour la rétrocompatibilité
-                try {
-                  console.log('Loading from standard directory:', modulePath);
-                  await readModulesFolder(modulePath, localModulePath);
-                } catch (err) {
-                  console.error(`Error reading module folder ${modulePath}:`, err);
+            // Modules scoped, ex: @xxx/edrm-*
+            if (moduleName.startsWith('@') && isDirectory(fullPath)) {
+              const scopedPackages = fs.readdirSync(fullPath);
+              for (const pkg of scopedPackages) {
+                if (pkg.startsWith('edrm-')) {
+                  const scopedPath = path.join(fullPath, pkg);
+                  if (isDirectory(scopedPath)) {
+                    moduleEntries.push({ name: `${moduleName}/${pkg}`, path: scopedPath });
+                  }
                 }
               }
             }
           }
+
+          // Charger chaque module
+          for (const moduleEntry of moduleEntries) {
+            logger.info('Loading EDRM module:', moduleEntry.name);
+            const distPath = path.join(moduleEntry.path, 'dist');
+
+            // Pour @xxx/edrm-abc → path.join(..., '@xxx', 'edrm-abc')
+            const localModulePath = path.join(localModulesPath, ...moduleEntry.name.split('/'));
+
+            if (isDirectory(distPath)) {
+              logger.info('Loading from dist directory:', distPath);
+              await readModulesFolder(distPath, localModulePath);
+            } else if (isDirectory(moduleEntry.path)) {
+              logger.info('Loading from standard directory:', moduleEntry.path);
+              await readModulesFolder(moduleEntry.path, localModulePath);
+            } else {
+              logger.warn(`Module ${moduleEntry.name} has no usable folder (dist or base).`);
+            }
+          }
         } catch (err) {
-          console.error('Error reading node modules directory:', err);
+          logger.error('Error reading node_modules:', err);
         }
       };
 
       // Load the marketplace modules
       await loadMarketplaceModules();
       // Load modules from the local modules folder
-      let modulesFolder = path.join(this.__dirname, '../../../../dist/modules');
+      let modulesFolder = path.join(process.cwd(), 'dist/modules');
 
       if (isDirectory(modulesFolder)) {
         await readModulesFolder(modulesFolder, '');
       } else {
-        modulesFolder = path.join(this.__dirname, '../../../../src/modules');
+        modulesFolder = path.join(process.cwd(), 'src/modules');
         await readModulesFolder(modulesFolder, '');
       }
 
@@ -310,7 +276,6 @@ class EnduranceApp {
           const version = sortedVersions[index];
           if (version === 'default') {
             await loadRoutes(basePath, versionsMap.get(version)!, null);
-            console.log('Loaded routes :');
           } else {
             await loadRoutes(basePath, versionsMap.get(version)!, version);
           }
@@ -338,7 +303,6 @@ class EnduranceApp {
 
       const enableSwagger = process.env.SWAGGER !== 'false';
       if (enableSwagger) {
-        console.log(this.swaggerApiFiles);
         const swaggerSpec = enduranceSwagger.generateSwaggerSpec(this.swaggerApiFiles);
         await enduranceSwagger.setupSwagger(this.app, swaggerSpec);
       }
@@ -371,7 +335,7 @@ class EnduranceApp {
 
   private setupDatabase() {
     if (process.env.MONGODB_HOST) {
-      import('./database.js').then(({ enduranceDatabase }) => {
+      import('../infra/database.js').then(({ enduranceDatabase }) => {
         this.app.use(
           session({
             secret: process.env.SESSION_SECRET || 'endurance',
@@ -382,14 +346,21 @@ class EnduranceApp {
         );
 
         enduranceDatabase.connect()
-          .then(() => {
+          .then(({ conn }) => {
+            const db = conn.db;
+            if (!db) {
+              logger.warn('[endurance-core] MongoDB connection established, but no database instance found.');
+              return;
+            }
+            setupDistributedEmitter(conn.db);
+
             // Ne démarrer le serveur que si le module est utilisé directement
             if (this.isDirectUsage) {
               this.startServer();
             }
           })
           .catch((err: Error) => {
-            console.error('Error connecting to MongoDB', err);
+            logger.error('Error connecting to MongoDB', err);
           });
       });
     } else {
@@ -409,7 +380,7 @@ class EnduranceApp {
   }
 
   private startServer() {
-    console.log(`
+    logger.info(`
       ______           _                                
      |  ____|         | |                               
      | |__   _ __   __| |_   _ _ __ __ _ _ __   ___ ___ 
@@ -420,7 +391,7 @@ class EnduranceApp {
                                                         
     `);
     this.app.listen(this.port, () => {
-      console.log(`Server listening on port ${this.port}`);
+      logger.info(`Server listening on port ${this.port}`);
       enduranceEmitter.emit(enduranceEventTypes.APP_STARTED);
     });
   }

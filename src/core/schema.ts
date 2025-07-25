@@ -1,6 +1,6 @@
 import * as Typegoose from '@typegoose/typegoose';
 import { Types } from 'mongoose';
-import { enduranceEmitter } from './emitter.js';
+import { enduranceEmitter } from '../core/emitter.js';
 
 export type EnduranceDocumentType<T> = Typegoose.DocumentType<T>;
 export type ObjectId = Types.ObjectId;
