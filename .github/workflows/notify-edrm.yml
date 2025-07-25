@@ -1,0 +1,19 @@
+name: Notify edrm packages on release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repo: [edrm-user, edrm-mailer, edrm-exams, edrm-prometheus]
+    steps:
+      - name: Trigger ${{ matrix.repo }}
+        run: |
+          curl -X POST https://api.github.com/repos/programisto-labs/${{ matrix.repo }}/dispatches \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.PAT_FOR_DISPATCH }}" \
+            -d '{"event_type": "bump_endurance", "client_payload": { "version": "${{ github.event.release.tag_name }}" }}'

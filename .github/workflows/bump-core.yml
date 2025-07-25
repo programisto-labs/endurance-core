@@ -1,0 +1,27 @@
+name: Update endurance-core version
+
+on:
+  repository_dispatch:
+    types: [bump_endurance]
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Update endurance-core dependency
+        run: |
+          CORE_VERSION=${{ github.event.client_payload.version }}
+          jq --arg ver "^${CORE_VERSION#v}" '.dependencies["@programisto/endurance-core"] = $ver' package.json > tmp && mv tmp package.json
+          npm install
+          git config user.name "🤖 Bump Bot"
+          git config user.email "actions@github.com"
+          git commit -am "chore: bump endurance-core to ${CORE_VERSION}"
+          git push

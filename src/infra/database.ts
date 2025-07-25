@@ -2,12 +2,7 @@ import mongoose from 'mongoose';
 import session from 'express-session';
 import logger from '../core/logger.js';
 
-const isMongo42OrHigher = process.env.IS_MONGO_42_OR_HIGHER !== undefined ? process.env.IS_MONGO_42_OR_HIGHER : true;
-
-const connectMongoDBSession = isMongo42OrHigher
-  ? (await import('connect-mongodb-session')).default
-  : (await import('connect-mongodb-session-legacy')).default;
-
+import connectMongoDBSession from 'connect-mongodb-session';
 const MongoDBStore = connectMongoDBSession(session);
 
 /* eslint-disable no-var, no-unused-vars */
@@ -38,14 +33,15 @@ class EnduranceDatabase {
       MONGODB_PASSWORD,
       MONGODB_HOST,
       MONGODB_DATABASE,
-      MONGODB_AUTH
+      MONGODB_AUTH,
+      MONGODB_URI
     } = process.env;
 
     const MONGODB_PROTOCOL = process.env.MONGODB_PROTOCOL || 'mongodb+srv';
-    if (MONGODB_AUTH !== 'false') {
+    if (!MONGODB_URI) {
       return `${MONGODB_PROTOCOL}://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_HOST}/${MONGODB_DATABASE}`;
     }
-    return `${MONGODB_PROTOCOL}://${MONGODB_HOST}/${MONGODB_DATABASE}`;
+    return `${MONGODB_URI}`;
   }
 
   public async connect(): Promise<{ conn: mongoose.Connection }> {

@@ -134,9 +134,25 @@ class EnduranceApp {
         const { default: router } = await import('file:///' + filePath);
         const versionedPath = version ? `/v${version}${basePath}` : basePath;
         this.app.use(versionedPath, router.getRouter());
-        this.swaggerApiFiles.push(filePath); // Add route file to Swagger API files list
+        this.swaggerApiFiles.push(filePath);
       } catch (err) {
-        logger.error(`Error loading routes from ${filePath}:`, err);
+        logger.error(`❌ Error loading routes from ${filePath}:`);
+        if (err instanceof AggregateError) {
+            for (const e of err.errors) {
+                logger.error(e.stack || e.message || e);
+              console.error('Error details:', e);
+
+            }
+        } else {
+            if (typeof err === 'object' && err !== null && ('stack' in err || 'message' in err)) {
+              logger.error((err as { stack?: string; message?: string }).stack || (err as { message?: string }).message || err);
+              console.error('Error details:', err);
+
+            } else {
+              logger.error(err);
+              console.error('Error details:', err);
+            }
+        }
       }
     };
 
