@@ -38,7 +38,8 @@ class EnduranceDatabase {
       MONGODB_PASSWORD,
       MONGODB_HOST,
       MONGODB_DATABASE,
-      MONGODB_AUTH
+      // MONGODB_AUTH,
+      MONGODB_URI
     } = process.env;
 
     const MONGODB_PROTOCOL = process.env.MONGODB_PROTOCOL || 'mongodb+srv';
