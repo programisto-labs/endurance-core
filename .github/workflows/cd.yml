@@ -80,28 +80,6 @@ jobs:
           NODE_AUTH_TOKEN: ""
           NPM_CONFIG_USERCONFIG: .npmrc
 
-      - name: Commit and push version bump
-        if: github.ref_name == 'main'
-        run: |
-          version=$(jq -r .version package.json)
-          git config user.name "semantic-release[bot]"
-          git config user.email "semantic-release@users.noreply.github.com"
-          git checkout -b release/v$version
-          git add package.json package-lock.json CHANGELOG.md
-          git commit -m "chore(release): bump version to v$version"
-          git push origin HEAD
-
-      - name: Create PR with version bump to main
-        if: github.ref_name == 'main'
-        id: pr_bump
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: release/v${{ steps.pr_bump.outputs.pull-request-number }}
-          base: main
-          title: 'chore(release): bump version'
-          body: 'Automated version bump after semantic-release'
-
       - name: Pull latest main after release
         if: github.ref_name == 'main'
         run: git pull origin main
