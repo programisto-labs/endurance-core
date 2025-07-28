@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/programisto-labs/endurance-core/compare/v1.1.4...v1.1.5) (2025-07-28)
+
+
+### Bug Fixes
+
+* add steps 2 ([d4bad83](https://github.com/programisto-labs/endurance-core/commit/d4bad83dfd8a6f800368abea16118be9368484a7))
+
 ## [1.1.4](https://github.com/programisto-labs/endurance-core/compare/v1.1.3...v1.1.4) (2025-07-28)
 
 
