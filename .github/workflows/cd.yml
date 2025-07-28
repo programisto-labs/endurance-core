@@ -67,7 +67,7 @@ jobs:
           fi
         env:
 #          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ""
           NPM_CONFIG_USERCONFIG: .npmrc
@@ -84,7 +84,7 @@ jobs:
           HUSKY_SKIP_COMMIT: 1
         with:
  #         token: ${{ steps.generate_token.outputs.token }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
           base: develop
           branch: release/main-to-develop
           title: 'chore: sync main → develop post-release'
@@ -97,6 +97,6 @@ jobs:
           HUSKY_SKIP_COMMIT: 1
         with:
 #          token: ${{ steps.generate_token.outputs.token }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_PAT }}
           pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
           merge-method: squash
