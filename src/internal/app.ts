@@ -141,13 +141,11 @@ class EnduranceApp {
             for (const e of err.errors) {
                 logger.error(e.stack || e.message || e);
               console.error('Error details:', e);
-
             }
         } else {
             if (typeof err === 'object' && err !== null && ('stack' in err || 'message' in err)) {
               logger.error((err as { stack?: string; message?: string }).stack || (err as { message?: string }).message || err);
               console.error('Error details:', err);
-
             } else {
               logger.error(err);
               console.error('Error details:', err);
