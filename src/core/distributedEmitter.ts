@@ -5,6 +5,48 @@ import { enduranceEmitter } from './emitter.js';
 let isDistributed = false;
 const replicatedEvents = new WeakSet<object>();
 
+// Fonction pour nettoyer les objets des références circulaires
+const sanitizeForBSON = (obj: any, seen = new WeakSet()): any => {
+    if (obj === null || obj === undefined) {
+        return obj;
+    }
+
+    if (typeof obj !== 'object') {
+        return obj;
+    }
+
+    if (seen.has(obj)) {
+        return '[Circular Reference]';
+    }
+
+    seen.add(obj);
+
+    if (Array.isArray(obj)) {
+        return obj.map(item => sanitizeForBSON(item, seen));
+    }
+
+    if (obj instanceof Date) {
+        return obj;
+    }
+
+    if (obj instanceof Buffer) {
+        return obj;
+    }
+
+    const sanitized: any = {};
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            try {
+                sanitized[key] = sanitizeForBSON(obj[key], seen);
+            } catch (error) {
+                sanitized[key] = '[Error serializing]';
+            }
+        }
+    }
+
+    return sanitized;
+};
+
 export const setupDistributedEmitter = async (db: mongoose.mongo.Db) => {
     try {
         const instanceId = `instance_${Math.random().toString(36).slice(2)}`;
@@ -14,9 +56,12 @@ export const setupDistributedEmitter = async (db: mongoose.mongo.Db) => {
             const maybeWrapper = payload.at(-1);
             if (maybeWrapper && typeof maybeWrapper === 'object' && replicatedEvents.has(maybeWrapper)) return;
 
+            // Nettoyer le payload des références circulaires
+            const sanitizedPayload = sanitizeForBSON(payload);
+
             collection.insertOne({
                 event,
-                payload,
+                payload: sanitizedPayload,
                 source: instanceId,
                 createdAt: new Date()
             }).catch(err =>
