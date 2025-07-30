@@ -98,13 +98,13 @@ jobs:
           title: 'chore: sync main → develop post-release'
           body: 'This PR syncs the release commit from main to develop.'
 
-#       - name: Enable auto-merge
-#         if: github.ref_name == 'main'
-#         uses: peter-evans/enable-pull-request-automerge@v2
-#         env:
-#           HUSKY_SKIP_COMMIT: 1
-#         with:
-# #          token: ${{ steps.generate_token.outputs.token }}
-#           token: ${{ secrets.GITHUB_TOKEN }}
-#           pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
-#           merge-method: squash
+      - name: Enable auto-merge
+        if: github.ref_name == 'main'
+        uses: peter-evans/enable-pull-request-automerge@v2
+        env:
+          HUSKY_SKIP_COMMIT: 1
+        with:
+#          token: ${{ steps.generate_token.outputs.token }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.create_pr.outputs.pull-request-number }}
+          merge-method: squash
