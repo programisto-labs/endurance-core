@@ -1,3 +1,10 @@
+## [1.1.7](https://github.com/programisto-labs/endurance-core/compare/v1.1.6...v1.1.7) (2025-07-30)
+
+
+### Bug Fixes
+
+* notify on push ([453d485](https://github.com/programisto-labs/endurance-core/commit/453d48565a318a7b78bcc520a9919decd0faea42))
+
 ## [1.1.6](https://github.com/programisto-labs/endurance-core/compare/v1.1.5...v1.1.6) (2025-07-30)
 
 
