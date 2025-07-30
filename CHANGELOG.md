@@ -1,3 +1,12 @@
+## [1.1.6](https://github.com/programisto-labs/endurance-core/compare/v1.1.5...v1.1.6) (2025-07-30)
+
+
+### Bug Fixes
+
+* develop push ([a18e32d](https://github.com/programisto-labs/endurance-core/commit/a18e32d383ca66fe9275cd17fee967d96b72e689))
+* new logger with stack trace and error detail ([56c94bc](https://github.com/programisto-labs/endurance-core/commit/56c94bcda734984b29cef6f0747f665f27f176c1))
+* rm automerge ([49e58f1](https://github.com/programisto-labs/endurance-core/commit/49e58f10a243e5e46bd7e3485436f60e2d4f44ec))
+
 ## [1.1.5](https://github.com/programisto-labs/endurance-core/compare/v1.1.4...v1.1.5) (2025-07-28)
 
 
