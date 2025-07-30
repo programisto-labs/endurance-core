@@ -35,7 +35,7 @@ const sanitizeForBSON = (obj: any, seen = new WeakSet()): any => {
 
     const sanitized: any = {};
     for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
             try {
                 sanitized[key] = sanitizeForBSON(obj[key], seen);
             } catch (error) {
