@@ -81,7 +81,7 @@ const baseLogger = pino(
 );
 
 // Création du logger avec caller
-const logger = pinoCaller(baseLogger, {
+const baseLoggerWithCaller = pinoCaller(baseLogger, {
     relativeTo: process.cwd()
 });
 
@@ -96,33 +96,53 @@ const formatMessage = (msg: any, ...args: any[]) => {
 // Fonctions helper qui préservent l'information de l'appelant
 export const logInfo = (msg: any, ...args: any[]) => {
     if (args.length === 1 && typeof args[0] === 'object') {
-        logger.info({ msg, err: serializeError(args[0]) });
+        baseLoggerWithCaller.info({ msg, err: serializeError(args[0]) });
+    } else if (args.length >= 2 && typeof args[args.length - 1] === 'object') {
+        // Cas spécial pour logger.info("message", err)
+        const errorObj = args[args.length - 1];
+        const message = args.length === 2 ? msg : formatMessage(msg, ...args.slice(0, -1));
+        baseLoggerWithCaller.info({ msg: message, err: serializeError(errorObj) });
     } else {
-        logger.info(formatMessage(msg, ...args));
+        baseLoggerWithCaller.info(formatMessage(msg, ...args));
     }
 };
 
 export const logWarn = (msg: any, ...args: any[]) => {
     if (args.length === 1 && typeof args[0] === 'object') {
-        logger.warn({ msg, err: serializeError(args[0]) });
+        baseLoggerWithCaller.warn({ msg, err: serializeError(args[0]) });
+    } else if (args.length >= 2 && typeof args[args.length - 1] === 'object') {
+        // Cas spécial pour logger.warn("message", err)
+        const errorObj = args[args.length - 1];
+        const message = args.length === 2 ? msg : formatMessage(msg, ...args.slice(0, -1));
+        baseLoggerWithCaller.warn({ msg: message, err: serializeError(errorObj) });
     } else {
-        logger.warn(formatMessage(msg, ...args));
+        baseLoggerWithCaller.warn(formatMessage(msg, ...args));
     }
 };
 
 export const logError = (msg: any, ...args: any[]) => {
     if (args.length === 1 && typeof args[0] === 'object') {
-        logger.error({ msg, err: serializeError(args[0]) });
+        baseLoggerWithCaller.error({ msg, err: serializeError(args[0]) });
+    } else if (args.length >= 2 && typeof args[args.length - 1] === 'object') {
+        // Cas spécial pour logger.error("message", err)
+        const errorObj = args[args.length - 1];
+        const message = args.length === 2 ? msg : formatMessage(msg, ...args.slice(0, -1));
+        baseLoggerWithCaller.error({ msg: message, err: serializeError(errorObj) });
     } else {
-        logger.error(formatMessage(msg, ...args));
+        baseLoggerWithCaller.error(formatMessage(msg, ...args));
     }
 };
 
 export const logDebug = (msg: any, ...args: any[]) => {
     if (args.length === 1 && typeof args[0] === 'object') {
-        logger.debug({ msg, err: serializeError(args[0]) });
+        baseLoggerWithCaller.debug({ msg, err: serializeError(args[0]) });
+    } else if (args.length >= 2 && typeof args[args.length - 1] === 'object') {
+        // Cas spécial pour logger.debug("message", err)
+        const errorObj = args[args.length - 1];
+        const message = args.length === 2 ? msg : formatMessage(msg, ...args.slice(0, -1));
+        baseLoggerWithCaller.debug({ msg: message, err: serializeError(errorObj) });
     } else {
-        logger.debug(formatMessage(msg, ...args));
+        baseLoggerWithCaller.debug(formatMessage(msg, ...args));
     }
 };
 
@@ -147,67 +167,71 @@ const serializeError = (err: any) => {
 // Rediriger console.* vers logger
 console.log = (...args) => {
     if (args.length === 1 && typeof args[0] === 'object') {
-        logger.info(serializeError(args[0]));
+        baseLoggerWithCaller.info(serializeError(args[0]));
     } else if (args.length === 2 && typeof args[1] === 'object') {
-        logger.info({ msg: args[0], err: serializeError(args[1]) });
+        baseLoggerWithCaller.info({ msg: args[0], err: serializeError(args[1]) });
     } else {
         // Pour les arguments multiples, créer un message formaté
         const message = args.map(arg =>
             typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
         ).join(' ');
-        logger.info(message);
+        baseLoggerWithCaller.info(message);
     }
 };
 console.info = (...args) => {
     if (args.length === 1 && typeof args[0] === 'object') {
-        logger.info(serializeError(args[0]));
+        baseLoggerWithCaller.info(serializeError(args[0]));
     } else if (args.length === 2 && typeof args[1] === 'object') {
-        logger.info({ msg: args[0], err: serializeError(args[1]) });
+        baseLoggerWithCaller.info({ msg: args[0], err: serializeError(args[1]) });
     } else {
         // Pour les arguments multiples, créer un message formaté
         const message = args.map(arg =>
             typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
         ).join(' ');
-        logger.info(message);
+        baseLoggerWithCaller.info(message);
     }
 };
 console.warn = (...args) => {
     if (args.length === 1 && typeof args[0] === 'object') {
-        logger.warn(serializeError(args[0]));
+        baseLoggerWithCaller.warn(serializeError(args[0]));
     } else if (args.length === 2 && typeof args[1] === 'object') {
-        logger.warn({ msg: args[0], err: serializeError(args[1]) });
+        baseLoggerWithCaller.warn({ msg: args[0], err: serializeError(args[1]) });
     } else {
         // Pour les arguments multiples, créer un message formaté
         const message = args.map(arg =>
             typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
         ).join(' ');
-        logger.warn(message);
+        baseLoggerWithCaller.warn(message);
     }
 };
 console.error = (...args) => {
     if (args.length === 1 && typeof args[0] === 'object') {
-        logger.error(serializeError(args[0]));
-    } else if (args.length === 2 && typeof args[1] === 'object') {
-        logger.error({ msg: args[0], err: serializeError(args[1]) });
+        baseLoggerWithCaller.error(serializeError(args[0]));
+    } else if (args.length >= 2 && typeof args[args.length - 1] === 'object') {
+        // Cas spécial pour logger.error("message", err)
+        const errorObj = args[args.length - 1];
+        const message = args.length === 2 ? args[0] : args.slice(0, -1).join(' ');
+        // Utiliser le logger de base pour préserver l'information de l'appelant
+        baseLogger.error({ msg: message, err: serializeError(errorObj) });
     } else {
         // Pour les arguments multiples, créer un message formaté
         const message = args.map(arg =>
             typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
         ).join(' ');
-        logger.error(message);
+        baseLoggerWithCaller.error(message);
     }
 };
 console.debug = (...args) => {
     if (args.length === 1 && typeof args[0] === 'object') {
-        logger.debug(serializeError(args[0]));
+        baseLoggerWithCaller.debug(serializeError(args[0]));
     } else if (args.length === 2 && typeof args[1] === 'object') {
-        logger.debug({ msg: args[0], err: serializeError(args[1]) });
+        baseLoggerWithCaller.debug({ msg: args[0], err: serializeError(args[1]) });
     } else {
         // Pour les arguments multiples, créer un message formaté
         const message = args.map(arg =>
             typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
         ).join(' ');
-        logger.debug(message);
+        baseLoggerWithCaller.debug(message);
     }
 };
 
@@ -220,8 +244,56 @@ const accessLogStream = rfs.createStream('access.log', {
 export const morganStream = {
     write: (message: string) => {
         accessLogStream.write(message);
-        logger.info(message.trim());
+        baseLoggerWithCaller.info(message.trim());
     }
 };
 
-export default logger;
+// Créer un wrapper qui préserve l'information de l'appelant
+const createLoggerWithCaller = () => {
+    const logger = {
+        info: (msg: any, ...args: any[]) => {
+            if (args.length >= 1 && typeof args[args.length - 1] === 'object') {
+                const errorObj = args[args.length - 1];
+                const message = args.length === 1 ? msg : formatMessage(msg, ...args.slice(0, -1));
+                baseLoggerWithCaller.info({ msg: message, err: serializeError(errorObj) });
+            } else {
+                baseLoggerWithCaller.info(formatMessage(msg, ...args));
+            }
+        },
+        warn: (msg: any, ...args: any[]) => {
+            if (args.length >= 1 && typeof args[args.length - 1] === 'object') {
+                const errorObj = args[args.length - 1];
+                const message = args.length === 1 ? msg : formatMessage(msg, ...args.slice(0, -1));
+                baseLoggerWithCaller.warn({ msg: message, err: serializeError(errorObj) });
+            } else {
+                baseLoggerWithCaller.warn(formatMessage(msg, ...args));
+            }
+        },
+        error: (msg: any, ...args: any[]) => {
+            if (args.length >= 1 && typeof args[args.length - 1] === 'object') {
+                const errorObj = args[args.length - 1];
+                const message = args.length === 1 ? msg : formatMessage(msg, ...args.slice(0, -1));
+                // Créer un nouvel objet Error pour capturer la stack trace de l'appelant
+                const callerError = new Error();
+                Error.captureStackTrace(callerError, logger.error);
+                // Utiliser le logger de base pour préserver l'information de l'appelant
+                baseLogger.error({ msg: message, err: serializeError(errorObj), caller: callerError.stack });
+            } else {
+                baseLoggerWithCaller.error(formatMessage(msg, ...args));
+            }
+        },
+        debug: (msg: any, ...args: any[]) => {
+            if (args.length >= 1 && typeof args[args.length - 1] === 'object') {
+                const errorObj = args[args.length - 1];
+                const message = args.length === 1 ? msg : formatMessage(msg, ...args.slice(0, -1));
+                baseLoggerWithCaller.debug({ msg: message, err: serializeError(errorObj) });
+            } else {
+                baseLoggerWithCaller.debug(formatMessage(msg, ...args));
+            }
+        },
+        child: baseLoggerWithCaller.child.bind(baseLoggerWithCaller)
+    };
+    return logger;
+};
+
+export default createLoggerWithCaller();
