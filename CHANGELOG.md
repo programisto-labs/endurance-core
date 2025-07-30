@@ -1,3 +1,11 @@
+## [1.1.8](https://github.com/programisto-labs/endurance-core/compare/v1.1.7...v1.1.8) (2025-07-30)
+
+
+### Bug Fixes
+
+* distributed events error circular ref in payload ([384cebb](https://github.com/programisto-labs/endurance-core/commit/384cebb87acec8d245a5ce6558f2dbca21505c68))
+* distributed events error circular ref in payload ([40c9118](https://github.com/programisto-labs/endurance-core/commit/40c911879b8ad99d0cbc977e467d4f5c366a7657))
+
 ## [1.1.7](https://github.com/programisto-labs/endurance-core/compare/v1.1.6...v1.1.7) (2025-07-30)
 
 
