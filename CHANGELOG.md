@@ -1,3 +1,43 @@
+## [1.1.8](https://github.com/programisto-labs/endurance-core/compare/v1.1.7...v1.1.8) (2025-07-30)
+
+
+### Bug Fixes
+
+* distributed events error circular ref in payload ([384cebb](https://github.com/programisto-labs/endurance-core/commit/384cebb87acec8d245a5ce6558f2dbca21505c68))
+* distributed events error circular ref in payload ([40c9118](https://github.com/programisto-labs/endurance-core/commit/40c911879b8ad99d0cbc977e467d4f5c366a7657))
+
+## [1.1.7](https://github.com/programisto-labs/endurance-core/compare/v1.1.6...v1.1.7) (2025-07-30)
+
+
+### Bug Fixes
+
+* notify on push ([453d485](https://github.com/programisto-labs/endurance-core/commit/453d48565a318a7b78bcc520a9919decd0faea42))
+
+## [1.1.6](https://github.com/programisto-labs/endurance-core/compare/v1.1.5...v1.1.6) (2025-07-30)
+
+
+### Bug Fixes
+
+* develop push ([a18e32d](https://github.com/programisto-labs/endurance-core/commit/a18e32d383ca66fe9275cd17fee967d96b72e689))
+* new logger with stack trace and error detail ([56c94bc](https://github.com/programisto-labs/endurance-core/commit/56c94bcda734984b29cef6f0747f665f27f176c1))
+* rm automerge ([49e58f1](https://github.com/programisto-labs/endurance-core/commit/49e58f10a243e5e46bd7e3485436f60e2d4f44ec))
+
+## [1.1.5](https://github.com/programisto-labs/endurance-core/compare/v1.1.4...v1.1.5) (2025-07-28)
+
+
+### Bug Fixes
+
+* add steps 2 ([d4bad83](https://github.com/programisto-labs/endurance-core/commit/d4bad83dfd8a6f800368abea16118be9368484a7))
+
+## [1.1.4](https://github.com/programisto-labs/endurance-core/compare/v1.1.3...v1.1.4) (2025-07-28)
+
+
+### Bug Fixes
+
+* add steps ([4e2f6e0](https://github.com/programisto-labs/endurance-core/commit/4e2f6e02ad98c6e798d19a8b55ccb8ec2f7ec771))
+* fake check ([719bc10](https://github.com/programisto-labs/endurance-core/commit/719bc103f6d1f6666cad420a04176d366ed6d41c))
+* fake check ([e2ba6c2](https://github.com/programisto-labs/endurance-core/commit/e2ba6c2d5c45937dd322e6eaf9fa187ae3734057))
+
 ## [1.1.3](https://github.com/programisto-labs/endurance-core/compare/v1.1.2...v1.1.3) (2025-07-28)
 
 
