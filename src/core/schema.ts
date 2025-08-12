@@ -22,7 +22,16 @@ export const EnduranceModelType = {
 @EnduranceModelType.pre('save', function (this: any) {
     enduranceEmitter.emit(`${this.constructor.name}:preSave`, this);
 })
-@EnduranceModelType.modelOptions({ schemaOptions: { timestamps: true } })
+@EnduranceModelType.modelOptions({
+    schemaOptions: {
+        timestamps: true,
+        toObject: { virtuals: true },
+        toJSON: { virtuals: true },
+        _id: true,
+        validateBeforeSave: false,
+        strict: false
+    }
+})
 export abstract class EnduranceSchema {
     private static _model: any;
 

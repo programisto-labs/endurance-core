@@ -100,6 +100,36 @@ abstract class EnduranceRouter<T = any> {
     return middlewares;
   }
 
+  private createResponseInterceptor(res: Response) {
+    const originalSend = res.send;
+    const originalJson = res.json;
+    const responseInfo = {
+      data: null as any,
+      status: 200 as number
+    };
+    let responseSent = false;
+
+    res.send = function (data: any) {
+      if (!responseSent) {
+        responseInfo.data = data;
+        responseInfo.status = res.statusCode;
+        responseSent = true;
+      }
+      return originalSend.call(this, data);
+    };
+
+    res.json = function (data: any) {
+      if (!responseSent) {
+        responseInfo.data = data;
+        responseInfo.status = res.statusCode;
+        responseSent = true;
+      }
+      return originalJson.call(this, data);
+    };
+
+    return responseInfo;
+  }
+
   protected buildFileUploadMiddleware(config: FileUploadConfig): any {
     const { fieldName, options } = config;
     const { maxCount, allowedMimeTypes, maxFileSize, storage } = options;
@@ -171,22 +201,7 @@ abstract class EnduranceRouter<T = any> {
     const wrappedHandlers = handlers.map(handler => async (req: Request, res: Response, next: NextFunction) => {
       try {
         // Intercepter la réponse pour capturer le résultat
-        const originalSend = res.send;
-        const originalJson = res.json;
-        let responseData: any = null;
-        let responseStatus: number = 200;
-
-        res.send = function (data: any) {
-          responseData = data;
-          responseStatus = res.statusCode;
-          return originalSend.call(this, data);
-        };
-
-        res.json = function (data: any) {
-          responseData = data;
-          responseStatus = res.statusCode;
-          return originalJson.call(this, data);
-        };
+        const responseInfo = this.createResponseInterceptor(res);
 
         await handler(req as EnduranceRequest<T>, res, next);
 
@@ -197,8 +212,8 @@ abstract class EnduranceRouter<T = any> {
           method: 'GET',
           req,
           res,
-          responseData,
-          responseStatus
+          responseData: responseInfo.data,
+          responseStatus: responseInfo.status
         });
       } catch (error) {
         next(error);
@@ -243,22 +258,7 @@ abstract class EnduranceRouter<T = any> {
     const wrappedHandlers = handlers.map(handler => async (req: Request, res: Response, next: NextFunction) => {
       try {
         // Intercepter la réponse pour capturer le résultat
-        const originalSend = res.send;
-        const originalJson = res.json;
-        let responseData: any = null;
-        let responseStatus: number = 200;
-
-        res.send = function (data: any) {
-          responseData = data;
-          responseStatus = res.statusCode;
-          return originalSend.call(this, data);
-        };
-
-        res.json = function (data: any) {
-          responseData = data;
-          responseStatus = res.statusCode;
-          return originalJson.call(this, data);
-        };
+        const responseInfo = this.createResponseInterceptor(res);
 
         await handler(req as EnduranceRequest<T>, res, next);
 
@@ -269,8 +269,8 @@ abstract class EnduranceRouter<T = any> {
           method: 'POST',
           req,
           res,
-          responseData,
-          responseStatus
+          responseData: responseInfo.data,
+          responseStatus: responseInfo.status
         });
       } catch (error) {
         next(error);
@@ -290,22 +290,7 @@ abstract class EnduranceRouter<T = any> {
     const wrappedHandlers = handlers.map(handler => async (req: Request, res: Response, next: NextFunction) => {
       try {
         // Intercepter la réponse pour capturer le résultat
-        const originalSend = res.send;
-        const originalJson = res.json;
-        let responseData: any = null;
-        let responseStatus: number = 200;
-
-        res.send = function (data: any) {
-          responseData = data;
-          responseStatus = res.statusCode;
-          return originalSend.call(this, data);
-        };
-
-        res.json = function (data: any) {
-          responseData = data;
-          responseStatus = res.statusCode;
-          return originalJson.call(this, data);
-        };
+        const responseInfo = this.createResponseInterceptor(res);
 
         await handler(req as EnduranceRequest<T>, res, next);
 
@@ -316,8 +301,8 @@ abstract class EnduranceRouter<T = any> {
           method: 'PUT',
           req,
           res,
-          responseData,
-          responseStatus
+          responseData: responseInfo.data,
+          responseStatus: responseInfo.status
         });
       } catch (error) {
         next(error);
@@ -335,22 +320,7 @@ abstract class EnduranceRouter<T = any> {
     const wrappedHandlers = handlers.map(handler => async (req: Request, res: Response, next: NextFunction) => {
       try {
         // Intercepter la réponse pour capturer le résultat
-        const originalSend = res.send;
-        const originalJson = res.json;
-        let responseData: any = null;
-        let responseStatus: number = 200;
-
-        res.send = function (data: any) {
-          responseData = data;
-          responseStatus = res.statusCode;
-          return originalSend.call(this, data);
-        };
-
-        res.json = function (data: any) {
-          responseData = data;
-          responseStatus = res.statusCode;
-          return originalJson.call(this, data);
-        };
+        const responseInfo = this.createResponseInterceptor(res);
 
         await handler(req as EnduranceRequest<T>, res, next);
 
@@ -361,8 +331,8 @@ abstract class EnduranceRouter<T = any> {
           method: 'DELETE',
           req,
           res,
-          responseData,
-          responseStatus
+          responseData: responseInfo.data,
+          responseStatus: responseInfo.status
         });
       } catch (error) {
         next(error);
@@ -380,22 +350,7 @@ abstract class EnduranceRouter<T = any> {
     const wrappedHandlers = handlers.map(handler => async (req: Request, res: Response, next: NextFunction) => {
       try {
         // Intercepter la réponse pour capturer le résultat
-        const originalSend = res.send;
-        const originalJson = res.json;
-        let responseData: any = null;
-        let responseStatus: number = 200;
-
-        res.send = function (data: any) {
-          responseData = data;
-          responseStatus = res.statusCode;
-          return originalSend.call(this, data);
-        };
-
-        res.json = function (data: any) {
-          responseData = data;
-          responseStatus = res.statusCode;
-          return originalJson.call(this, data);
-        };
+        const responseInfo = this.createResponseInterceptor(res);
 
         await handler(req as EnduranceRequest<T>, res, next);
 
@@ -406,8 +361,8 @@ abstract class EnduranceRouter<T = any> {
           method: 'PATCH',
           req,
           res,
-          responseData,
-          responseStatus
+          responseData: responseInfo.data,
+          responseStatus: responseInfo.status
         });
       } catch (error) {
         next(error);
