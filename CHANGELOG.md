@@ -1,3 +1,10 @@
+## [1.1.9](https://github.com/programisto-labs/endurance-core/compare/v1.1.8...v1.1.9) (2025-08-12)
+
+
+### Bug Fixes
+
+* fix schema strict issue overlaping modules ([557dc22](https://github.com/programisto-labs/endurance-core/commit/557dc2258b993ade48369543d0c62053aefbdf7e))
+
 ## [1.1.8](https://github.com/programisto-labs/endurance-core/compare/v1.1.7...v1.1.8) (2025-07-30)
 
 
