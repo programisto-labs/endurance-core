@@ -48,6 +48,13 @@ const sanitizeForBSON = (obj: any, seen = new WeakSet()): any => {
 };
 
 export const setupDistributedEmitter = async (db: mongoose.mongo.Db) => {
+    // Vérifier si les événements distribués sont activés
+    const enableDistributed = process.env.ENABLE_DISTRIBUTED_EVENTS === 'true';
+
+    if (!enableDistributed) {
+        return;
+    }
+
     try {
         const instanceId = `instance_${Math.random().toString(36).slice(2)}`;
         const collection = db.collection('endurance_events');
@@ -81,9 +88,13 @@ export const setupDistributedEmitter = async (db: mongoose.mongo.Db) => {
             }
         });
         isDistributed = true;
+        logger.info('[emitter] Distributed emitter setup completed successfully');
     } catch (err) {
         logger.warn('[emitter] Failed to set up distributed emitter', err);
     }
 };
 
 export const IS_DISTRIBUTED_EMITTER = () => isDistributed;
+
+// Fonction helper pour vérifier si les événements distribués sont activés
+export const IS_DISTRIBUTED_ENABLED = () => process.env.ENABLE_DISTRIBUTED_EVENTS === 'true';
