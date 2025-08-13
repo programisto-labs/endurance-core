@@ -20,7 +20,9 @@ export const EnduranceModelType = {
 };
 
 @EnduranceModelType.pre('save', function (this: any) {
-    enduranceEmitter.emit(`${this.constructor.name}:preSave`, this);
+    // Utiliser la méthode helper pour émettre l'événement avec le bon nom de classe
+    // Passer explicitement les données du document
+    this.emitEvent('preSave', this);
 })
 @EnduranceModelType.modelOptions({
     schemaOptions: {
@@ -33,6 +35,12 @@ export const EnduranceModelType = {
     }
 })
 export abstract class EnduranceSchema {
+    // Méthode helper pour émettre des événements avec le bon nom de classe
+    protected emitEvent(eventName: string, data?: any): void {
+        const className = this.constructor.name;
+        enduranceEmitter.emit(`${className}:${eventName}`, data || this);
+    }
+
     private static _model: any;
 
     public static getModel(): any {
