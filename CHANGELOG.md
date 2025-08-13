@@ -1,3 +1,10 @@
+## [1.1.11](https://github.com/programisto-labs/endurance-core/compare/v1.1.10...v1.1.11) (2025-08-13)
+
+
+### Bug Fixes
+
+* add feature flipping to distributed events ([3684347](https://github.com/programisto-labs/endurance-core/commit/3684347124e1ca911b023335f3c5b84b4556ecd1))
+
 ## [1.1.10](https://github.com/programisto-labs/endurance-core/compare/v1.1.9...v1.1.10) (2025-08-13)
 
 
