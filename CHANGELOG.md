@@ -1,3 +1,10 @@
+## [1.1.10](https://github.com/programisto-labs/endurance-core/compare/v1.1.9...v1.1.10) (2025-08-13)
+
+
+### Bug Fixes
+
+* presave events names ([16437aa](https://github.com/programisto-labs/endurance-core/commit/16437aa70e53374e9cbf7957a26de09e3c54a1a9))
+
 ## [1.1.9](https://github.com/programisto-labs/endurance-core/compare/v1.1.8...v1.1.9) (2025-08-12)
 
 
