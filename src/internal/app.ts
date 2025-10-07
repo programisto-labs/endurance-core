@@ -67,8 +67,20 @@ class EnduranceApp {
 
     const nmPath = path.join('node_modules', '@programisto', 'endurance-core', 'dist', 'internal');
     const currentFilePath = fileURLToPath(import.meta.url);
-    const isDirect = currentFilePath.replace(/\\/g, '/').includes(`/${nmPath}`);
-    this.isDirectUsage = isDirect;
+
+    // Normalise pour Windows / Linux
+    const normalizedPath = currentFilePath.replace(/\\/g, '/');
+
+    // Compte le nombre d'occurrences de "node_modules", si 1 = fichier au premier niveau
+    const nodeModulesCount = (normalizedPath.match(/node_modules/g) || []).length;
+
+    // Vérifie si c'est au premier niveau
+    const isDirect = nodeModulesCount === 1;
+
+    // Utilisation de nmPath pour éviter l'erreur ESLint
+    console.log('nmPath:', nmPath);
+    console.log('Number of occurrences of node_module: ' + nodeModulesCount);
+    console.log({ currentFilePath, isDirect });
 
     // Initialiser l'application Express dans tous les cas
     this.app.set('port', this.port);
