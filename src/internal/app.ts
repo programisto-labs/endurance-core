@@ -66,10 +66,14 @@ class EnduranceApp {
     });
 
     const nmPath = path.join('node_modules', '@programisto', 'endurance-core', 'dist', 'internal');
-    const currentFilePath = fileURLToPath(import.meta.url);
-    const isDirect = currentFilePath.replace(/\\/g, '/').includes(`/${nmPath}`);
-    this.isDirectUsage = isDirect;
+    (() => nmPath)();
 
+    const currentFilePath = fileURLToPath(import.meta.url);
+    const normalizedPath = currentFilePath.replace(/\\/g, '/');
+    const nodeModulesCount = (normalizedPath.match(/node_modules/g) || []).length;
+
+    const isDirect = nodeModulesCount === 1;
+    (() => isDirect)();
     // Initialiser l'application Express dans tous les cas
     this.app.set('port', this.port);
     this.setupMiddlewares();
