@@ -1,3 +1,11 @@
+## [1.1.12](https://github.com/programisto-labs/endurance-core/compare/v1.1.11...v1.1.12) (2025-10-07)
+
+
+### Bug Fixes
+
+* detect top-level node_modules only to avoid multiple servers ([44ca254](https://github.com/programisto-labs/endurance-core/commit/44ca254001782ac95bfeb8e8d8eb5261a050c8ca))
+* remove comments and console logs ([3259e35](https://github.com/programisto-labs/endurance-core/commit/3259e3598150c9171f464c2d558f325a6a784723))
+
 ## [1.1.11](https://github.com/programisto-labs/endurance-core/compare/v1.1.10...v1.1.11) (2025-08-13)
 
 
