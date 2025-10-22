@@ -65,10 +65,24 @@ class EnduranceApp {
       }
     });
 
-    const nmPath = path.join('node_modules', '@programisto', 'endurance-core', 'dist', 'internal');
+    // Détection intelligente de l'utilisation directe dans un mono-repo
     const currentFilePath = fileURLToPath(import.meta.url);
-    const isDirect = currentFilePath.replace(/\\/g, '/').includes(`/${nmPath}`);
-    this.isDirectUsage = isDirect;
+    const normalizedPath = currentFilePath.replace(/\\/g, '/');
+
+    const forceDirectUsage = process.env.ENDURANCE_DIRECT_USAGE === 'true';
+    const forceIndirectUsage = process.env.ENDURANCE_DIRECT_USAGE === 'false';
+
+    if (forceDirectUsage) {
+      this.isDirectUsage = true;
+    } else if (forceIndirectUsage) {
+      this.isDirectUsage = false;
+    } else {
+      const isInNodeModules = normalizedPath.includes('/node_modules/');
+      const isInEnduranceCore = normalizedPath.includes('@programisto/endurance-core');
+      const isDirect = !isInNodeModules || (isInNodeModules && isInEnduranceCore && this.isSymlinkOrSource());
+
+      this.isDirectUsage = isDirect;
+    }
 
     // Initialiser l'application Express dans tous les cas
     this.app.set('port', this.port);
@@ -413,6 +427,38 @@ class EnduranceApp {
   // Méthode publique pour accéder à l'instance de multer
   public getUpload() {
     return this.upload;
+  }
+
+  /**
+   * Détecte si le module est un lien symbolique ou s'exécute depuis le code source
+   * Utile dans un contexte mono-repo avec des liens symboliques
+   */
+  private isSymlinkOrSource(): boolean {
+    try {
+      const fs = require('fs');
+      const currentFilePath = fileURLToPath(import.meta.url);
+      const packageJsonPath = path.join(path.dirname(currentFilePath), '..', '..', 'package.json');
+
+      // Vérifier si le package.json existe et contient des infos de développement
+      if (fs.existsSync(packageJsonPath)) {
+        const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+        // Si c'est un lien symbolique, le chemin sera différent
+        const realPath = fs.realpathSync(currentFilePath);
+        const isSymlink = realPath !== currentFilePath;
+
+        // Ou si on détecte qu'on est dans un contexte de développement
+        const isDevContext = packageJson.name === '@programisto/endurance-core' &&
+          (packageJson.scripts?.dev || packageJson.scripts?.build);
+
+        return isSymlink || isDevContext;
+      }
+
+      return false;
+    } catch (error) {
+      // En cas d'erreur, on considère que c'est un usage direct
+      return true;
+    }
   }
 }
 
