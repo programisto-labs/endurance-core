@@ -76,9 +76,14 @@ class EnduranceApp {
     const forceDirectUsage = process.env.ENDURANCE_DIRECT_USAGE === 'true';
     const forceIndirectUsage = process.env.ENDURANCE_DIRECT_USAGE === 'false';
 
+    const isTestEnvironment = process.env.NODE_ENV === 'test' ||
+      process.env.JEST_WORKER_ID !== undefined ||
+      normalizedPath.includes('/__tests__/') ||
+      normalizedPath.includes('/node_modules/jest/');
+
     if (forceDirectUsage) {
       this.isDirectUsage = true;
-    } else if (forceIndirectUsage) {
+    } else if (forceIndirectUsage || isTestEnvironment) {
       this.isDirectUsage = false;
     } else {
       const isInNodeModules = normalizedPath.includes('/node_modules/');
