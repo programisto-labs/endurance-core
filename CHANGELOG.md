@@ -1,3 +1,25 @@
+## [1.1.12](https://github.com/programisto-labs/endurance-core/compare/v1.1.11...v1.1.12) (2025-10-07)
+
+
+### Bug Fixes
+
+* detect top-level node_modules only to avoid multiple servers ([44ca254](https://github.com/programisto-labs/endurance-core/commit/44ca254001782ac95bfeb8e8d8eb5261a050c8ca))
+* remove comments and console logs ([3259e35](https://github.com/programisto-labs/endurance-core/commit/3259e3598150c9171f464c2d558f325a6a784723))
+
+## [1.1.11](https://github.com/programisto-labs/endurance-core/compare/v1.1.10...v1.1.11) (2025-08-13)
+
+
+### Bug Fixes
+
+* add feature flipping to distributed events ([3684347](https://github.com/programisto-labs/endurance-core/commit/3684347124e1ca911b023335f3c5b84b4556ecd1))
+
+## [1.1.10](https://github.com/programisto-labs/endurance-core/compare/v1.1.9...v1.1.10) (2025-08-13)
+
+
+### Bug Fixes
+
+* presave events names ([16437aa](https://github.com/programisto-labs/endurance-core/commit/16437aa70e53374e9cbf7957a26de09e3c54a1a9))
+
 ## [1.1.9](https://github.com/programisto-labs/endurance-core/compare/v1.1.8...v1.1.9) (2025-08-12)
 
 
