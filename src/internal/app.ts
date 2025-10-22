@@ -65,7 +65,6 @@ class EnduranceApp {
       }
     });
 
-    // Détection intelligente de l'utilisation directe dans un mono-repo
     const nmPath = path.join('node_modules', '@programisto', 'endurance-core', 'dist', 'internal');
     (() => nmPath)();
 
