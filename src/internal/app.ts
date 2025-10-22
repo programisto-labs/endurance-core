@@ -66,8 +66,12 @@ class EnduranceApp {
     });
 
     // Détection intelligente de l'utilisation directe dans un mono-repo
+    const nmPath = path.join('node_modules', '@programisto', 'endurance-core', 'dist', 'internal');
+    (() => nmPath)();
+
     const currentFilePath = fileURLToPath(import.meta.url);
     const normalizedPath = currentFilePath.replace(/\\/g, '/');
+    const nodeModulesCount = (normalizedPath.match(/node_modules/g) || []).length;
 
     const forceDirectUsage = process.env.ENDURANCE_DIRECT_USAGE === 'true';
     const forceIndirectUsage = process.env.ENDURANCE_DIRECT_USAGE === 'false';
@@ -79,7 +83,10 @@ class EnduranceApp {
     } else {
       const isInNodeModules = normalizedPath.includes('/node_modules/');
       const isInEnduranceCore = normalizedPath.includes('@programisto/endurance-core');
-      const isDirect = !isInNodeModules || (isInNodeModules && isInEnduranceCore && this.isSymlinkOrSource());
+
+      const isDirect = !isInNodeModules ||
+        (isInNodeModules && isInEnduranceCore && this.isSymlinkOrSource()) ||
+        (nodeModulesCount > 1 && isInEnduranceCore);
 
       this.isDirectUsage = isDirect;
     }
