@@ -1,3 +1,12 @@
+## [1.1.13](https://github.com/programisto-labs/endurance-core/compare/v1.1.12...v1.1.13) (2025-10-22)
+
+
+### Bug Fixes
+
+* fix tests ([113bb23](https://github.com/programisto-labs/endurance-core/commit/113bb232bc80007753dda4442d83b456a1c70bab))
+* handle monorepo correctly ([d96db17](https://github.com/programisto-labs/endurance-core/commit/d96db17df976468c370cacf8433902bace224136))
+* handle monorepo correctly ([cb2a2ee](https://github.com/programisto-labs/endurance-core/commit/cb2a2eee61402742f291b03e9c9cce066831705f))
+
 ## [1.1.12](https://github.com/programisto-labs/endurance-core/compare/v1.1.11...v1.1.12) (2025-10-07)
 
 
