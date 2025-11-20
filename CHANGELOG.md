@@ -1,3 +1,10 @@
+## [1.1.15](https://github.com/programisto-labs/endurance-core/compare/v1.1.14...v1.1.15) (2025-11-20)
+
+
+### Bug Fixes
+
+* add dreprecation warning ([99dca52](https://github.com/programisto-labs/endurance-core/commit/99dca529bb7519affd863e4fc01c49d70243b0f9))
+
 ## [1.1.14](https://github.com/programisto-labs/endurance-core/compare/v1.1.13...v1.1.14) (2025-10-22)
 
 
